@@ -6,5 +6,7 @@ class CreatePlayers < ActiveRecord::Migration[6.0]
 
       t.timestamps
     end
+
+    add_index :players, [:lobby_id, :name], unique: true
   end
 end

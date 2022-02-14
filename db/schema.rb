@@ -25,6 +25,7 @@ ActiveRecord::Schema.define(version: 2022_02_13_184112) do
     t.string "name"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["lobby_id", "name"], name: "index_players_on_lobby_id_and_name", unique: true
     t.index ["lobby_id"], name: "index_players_on_lobby_id"
   end
 

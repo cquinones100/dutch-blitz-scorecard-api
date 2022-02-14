@@ -1,11 +1,15 @@
 class PlayersController < ApplicationController
   def create
     lobby = Lobby.find_by(id: decode(params[:lobby_id]))
-    player = Player.create(name: params[:name], lobby_id: lobby.id)
+    player = Player.new(name: params[:name], lobby_id: lobby.id)
 
-    LobbyChannel.broadcast(lobby)
+    if player.save
+      LobbyChannel.broadcast(lobby)
 
-    render json: Serializer.serialize(player, :name)
+      render json: Serializer.serialize(player, :name)
+    else
+      render json: player.errors, status: 422
+    end
   end
 
   def index
