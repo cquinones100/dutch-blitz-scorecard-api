@@ -13,6 +13,6 @@ class PlayersController < ApplicationController
   end
 
   def index
-    render json: Player.all.map { |player| Serializer.serialize(player, :name) }
+    render json: Player.where(lobby_id: decode(params[:lobby_id])).map { |player| Serializer.serialize(player, :name) }
   end
 end
