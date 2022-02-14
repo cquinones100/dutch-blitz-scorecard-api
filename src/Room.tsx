@@ -63,7 +63,7 @@ export default function Room() {
 
   useEffect(() => {
     const fetchPlayers = async () => {
-      const initialResponse = await fetch('http://blitz.cquinones.com/api/players', {
+      const initialResponse = await fetch(`http://blitz.cquinones.com/api/lobbies/${id}/players`, {
         headers: {
           'content-type': 'application/json',
         }
