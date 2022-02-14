@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, ChangeEvent, SetStateAction } from 'react'
 import { useParams } from 'react-router-dom';
 import { Consumer, createConsumer } from '@rails/actioncable';
-import { Form, Button, ListGroup } from 'react-bootstrap';
+import { Form, Button, ListGroup, Alert } from 'react-bootstrap';
 
 type Player = {
   name: string,
@@ -9,11 +9,10 @@ type Player = {
 }
 
 type PlayerFormProps = {
-  lobbyId: string;
-  setPlayer: (player: Player) => void;
+  submitPlayer: (name: string) => void;
 };
 
-function PlayerForm({ lobbyId: lobby_id, setPlayer }: PlayerFormProps ) {
+function PlayerForm({ submitPlayer }: PlayerFormProps ) {
   const [name, setName] = useState<string>('');
 
   const onChangeName = (e: ChangeEvent<HTMLInputElement>) => {
@@ -23,20 +22,7 @@ function PlayerForm({ lobbyId: lobby_id, setPlayer }: PlayerFormProps ) {
   const onSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
 
-    const initialResponse = await fetch('http://blitz.cquinones.com/api/players', {
-      method: 'POST',
-      body: JSON.stringify({
-        name,
-        lobby_id,
-      }),
-      headers: {
-        'content-type': 'application/json',
-      }
-    });
-
-    const player = await initialResponse.json();
-
-    setPlayer(player);
+    submitPlayer(name);
   };
 
   return(
@@ -61,6 +47,7 @@ export default function Room() {
   const { id } = useParams();
   const [player, setPlayer] = useState<Player>();
   const [players, setPlayers] = useState<Player[]>([]);
+  const [nameError, setNameError] = useState<string | undefined>();
 
   useEffect(() => {
     consumer.current = createConsumer('http://blitz.cquinones.com/api/cable');
@@ -86,11 +73,39 @@ export default function Room() {
     fetchPlayers();
   }, [])
 
+  const submitPlayer = async (name: string) => {
+    const initialResponse = await fetch('http://blitz.cquinones.com/api/players', {
+      method: 'POST',
+      body: JSON.stringify({
+        name,
+        lobby_id: id,
+      }),
+      headers: {
+        'content-type': 'application/json',
+      }
+    });
+
+    const player = await initialResponse.json();
+      
+    if (initialResponse.ok) {
+      setNameError(undefined);
+      setPlayer(player);
+    } else {
+      setNameError(player.name);
+    }
+  }
+
   return (
     <>
+      {
+      nameError && (
+        <Alert variant='danger'>
+          Name is already taken, please try another one
+        </Alert>
+      )}
       <h1>You are in room {id}</h1>
       {!player && id &&(
-        <PlayerForm setPlayer={setPlayer} lobbyId={id} />
+        <PlayerForm submitPlayer={submitPlayer} />
       )}
       {players.length > 0 && (
         <>
