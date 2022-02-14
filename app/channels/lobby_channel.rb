@@ -13,7 +13,7 @@ class LobbyChannel < ApplicationCable::Channel
     def broadcast(lobby)
       ActionCable.server.broadcast("lobby_#{encode(lobby.id)}", {
         data: {
-          players: lobby.players.map { |player| serialize(player, :name) },
+          players: lobby.players.map(&:serialize),
           lobby: serialize(lobby, :id).merge!(id: encode(lobby.id))
         }
       })
