@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState, ChangeEvent, SetStateAction } from 'react'
 import { useParams } from 'react-router-dom';
 import { Consumer, createConsumer } from '@rails/actioncable';
-import { Form, Button, ListGroup, Alert } from 'react-bootstrap';
+import { Form, Button, ListGroup, Alert, Row, Col, Badge } from 'react-bootstrap';
 
 type Player = {
-  name: string,
-  id: string
+  name: string;
+  id: string;
+  ready: boolean;
 }
 
 type PlayerFormProps = {
@@ -99,15 +100,35 @@ export default function Room() {
     }
   }
 
+  const onReady = async () => {
+    const initialResponse = await fetch(`http://blitz.cquinones.com/api/lobbies/${id}/players/${player.id}/player_readies`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+      }
+    });
+  };
+
   return (
     <>
       {
       nameError && (
-        <Alert variant='danger'>
-          Name is already taken, please try another one
-        </Alert>
+        <Row>
+          <Alert variant='danger'>
+            Name is already taken, please try another one
+          </Alert>
+        </Row>
       )}
-      <h1>You are in room {id}</h1>
+      <Row>
+        <Col xs={8}>
+          <h1>You are in room {id}</h1>
+        </Col>
+        <Col xs={4}>
+          {player && !player.ready && (
+            <Button variant='success' onClick={onReady}>I'm Ready!</Button>
+          )}
+        </Col>
+      </Row>
       {!player && id &&(
         <PlayerForm submitPlayer={submitPlayer} />
       )}
@@ -115,10 +136,10 @@ export default function Room() {
         <>
           <h2>Current Players</h2>
           <ListGroup>
-            {players.map(({ name, id }: Player) => {
+            {players.map(({ name, id, ready }: Player) => {
               return (
                 <ListGroup.Item key={id}>
-                  {name}
+                  {name} {ready ? <Badge bg='success'>Ready!</Badge> : <Badge bg='danger'>Not ready</Badge>}
                 </ListGroup.Item>
               );
             })}
