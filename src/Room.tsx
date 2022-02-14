@@ -51,10 +51,14 @@ export default function Room() {
 
   useEffect(() => {
     consumer.current = createConsumer('http://blitz.cquinones.com/api/cable');
-    consumer.current.subscriptions.create(
-      { channel: 'LobbyChannel', lobby_id: id },
-      { receivedData(data: string) { console.log(data) } }
-    );
+    consumer.current.subscriptions.create({
+      channel: 'LobbyChannel',
+      lobby_id: id
+    }, {
+      received({ data: { players } }: { data: { players: Player[] }}) {
+        setPlayers(players);
+      }
+    });
   }, [id]);
 
   useEffect(() => {
