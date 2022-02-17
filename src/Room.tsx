@@ -46,7 +46,7 @@ function PlayerForm({ submitPlayer }: PlayerFormProps ) {
 export default function Room() {
   const consumer = useRef<Consumer>();
   const { id } = useParams();
-  const [player, setPlayer] = useState<Player>();
+  const [player, setPlayer] = useState<Player | null>();
   const [players, setPlayers] = useState<Player[]>([]);
   const [nameError, setNameError] = useState<string | undefined>();
   const [token, setToken] = useState<string | null>(null);
@@ -73,6 +73,12 @@ export default function Room() {
 
         const player = await initialResponse.json();
 
+        if (player.lobby_id !== id) {
+          setPlayer(null);
+          
+          sessionStorage.removeItem('token');
+        }
+
         setPlayer(player);
       }
 
@@ -88,7 +94,7 @@ export default function Room() {
     }
 
     initialFetch();
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     consumer.current = createConsumer('http://blitz.cquinones.com/api/cable');
@@ -140,6 +146,13 @@ export default function Room() {
         'content-type': 'application/json',
       }
     });
+
+    if (initialResponse.ok) {
+      setPlayer({
+        ...player,
+        ready: true
+      });
+    }
   };
 
   if (fetching) return <></>;
