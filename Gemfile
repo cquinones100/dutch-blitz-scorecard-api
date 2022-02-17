@@ -26,6 +26,7 @@ gem 'bootsnap', '>= 1.4.2', require: false
 gem 'rack-cors'
 
 gem 'hashids'
+gem 'jwt'
 gem 'pry-rails'
 
 group :development, :test do

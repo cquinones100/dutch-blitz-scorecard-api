@@ -6,7 +6,12 @@ class PlayersController < ApplicationController
     if player.save
       LobbyChannel.broadcast(lobby)
 
-      render json: Serializer.serialize(player, :name)
+      json = {
+        player: Serializer.serialize(player, :name),
+        token: JWT.encode({ player_id: player.id, lobby_id: lobby.id }, 'secret')
+      }
+
+      render json: json
     else
       render json: player.errors, status: 422
     end
