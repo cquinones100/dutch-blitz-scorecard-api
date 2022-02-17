@@ -14,7 +14,8 @@ class LobbyChannel < ApplicationCable::Channel
       ActionCable.server.broadcast("lobby_#{encode(lobby.id)}", {
         data: {
           players: lobby.players.map(&:serialize),
-          lobby: serialize(lobby, :id).merge!(id: encode(lobby.id))
+          lobby: Serializer.serialize(lobby, :id),
+          rounds: lobby.rounds.order(:created_at).map { |round| Serializer.serialize(round, lobby_id: encode(lobby.id)) }
         }
       })
     end
@@ -23,14 +24,6 @@ class LobbyChannel < ApplicationCable::Channel
 
     def hash_ids
       @has_ids ||= Hashids.new('this is my salt', 5)
-    end
-
-    def serialize(obj, *args)
-      args.each_with_object({}) do |arg, hash|
-        hash[arg] = obj.send(arg)
-      end.tap do |hash|
-        hash[:id] = encode(obj.id)
-      end
     end
   end
 end
