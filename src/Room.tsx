@@ -169,7 +169,7 @@ export default function Room() {
       )}
       <Row>
         <Col xs={8}>
-          <h1>You are in room {id}</h1>
+          <h1>{player && `Hi ${player.name}, y`}{!player && 'Y'}ou are in room {id}</h1>
         </Col>
         <Col xs={4}>
           {player && !player.ready && (
