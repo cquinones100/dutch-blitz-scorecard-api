@@ -49,6 +49,46 @@ export default function Room() {
   const [player, setPlayer] = useState<Player>();
   const [players, setPlayers] = useState<Player[]>([]);
   const [nameError, setNameError] = useState<string | undefined>();
+  const [token, setToken] = useState<string | null>(null);
+  const [fetching, setFetching] = useState(true);
+
+  useEffect(() => {
+    const initialFetch = async () => {
+      const sessionToken = sessionStorage.getItem('token');
+
+      setToken(sessionToken);
+
+      const headers: HeadersInit = {
+        'content-type': 'application/json',
+      };
+
+      if (sessionToken) {
+        headers['Authorization'] = sessionToken;
+      }
+
+      if (sessionToken) { 
+        const initialResponse = await fetch(`http://blitz.cquinones.com/api/current_player`, {
+          headers
+        });
+
+        const player = await initialResponse.json();
+
+        setPlayer(player);
+      }
+
+      const initialResponse = await fetch(`http://blitz.cquinones.com/api/lobbies/${id}/players`, {
+        headers
+      });
+
+      const players = await initialResponse.json();
+
+      setPlayers(players);
+
+      setFetching(false);
+    }
+
+    initialFetch();
+  }, []);
 
   useEffect(() => {
     consumer.current = createConsumer('http://blitz.cquinones.com/api/cable');
@@ -63,20 +103,10 @@ export default function Room() {
   }, [id]);
 
   useEffect(() => {
-    const fetchPlayers = async () => {
-      const initialResponse = await fetch(`http://blitz.cquinones.com/api/lobbies/${id}/players`, {
-        headers: {
-          'content-type': 'application/json',
-        }
-      });
-
-      const players = await initialResponse.json();
-
-      setPlayers(players);
+    if (token) {
+      sessionStorage.setItem('token', token);
     }
-
-    fetchPlayers();
-  }, [])
+  }, [token]);
 
   const submitPlayer = async (name: string) => {
     const initialResponse = await fetch('http://blitz.cquinones.com/api/players', {
@@ -90,17 +120,20 @@ export default function Room() {
       }
     });
 
-    const player = await initialResponse.json();
+    const { player, token } = await initialResponse.json();
       
     if (initialResponse.ok) {
       setNameError(undefined);
       setPlayer(player);
+      setToken(token);
     } else {
       setNameError(player.name);
     }
   }
 
   const onReady = async () => {
+    if (!player) { return; }
+
     const initialResponse = await fetch(`http://blitz.cquinones.com/api/lobbies/${id}/players/${player.id}/player_readies`, {
       method: 'POST',
       headers: {
@@ -108,6 +141,8 @@ export default function Room() {
       }
     });
   };
+
+  if (fetching) return <></>;
 
   return (
     <>
