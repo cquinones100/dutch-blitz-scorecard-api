@@ -5,6 +5,8 @@ Rails.application.routes.draw do
     resources :players do
       resources :player_readies
     end
+
+    resources :rounds
   end
 
   resource :current_player, only: :show
