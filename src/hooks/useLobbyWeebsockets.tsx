@@ -21,7 +21,7 @@ const useLobbyWebsockets = (roomId: number) => {
   const consumer = useRef<Consumer>();
 
   useEffect(() => {
-    consumer.current = createConsumer('http://blitz.cquinones.com/api/cable');
+    consumer.current = createConsumer(`${process.env.API_URL}/cable`);
     consumer.current.subscriptions.create({
       channel: 'LobbyChannel',
       lobby_id: roomId

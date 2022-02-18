@@ -20,7 +20,7 @@ const usePersistence = (roomId, setPlayer, setPlayers) => {
 
       if (sessionToken) { 
         const initialResponse = await fetch(
-          `http://blitz.cquinones.com/api/current_player`,
+          `${process.env.REACT_APP_API_URL}/current_player`,
           { headers }
         );
 
@@ -36,7 +36,7 @@ const usePersistence = (roomId, setPlayer, setPlayers) => {
       }
 
       const initialResponse = await fetch(
-        `http://blitz.cquinones.com/api/lobbies/${id}/players`,
+        `${process.env.REACT_APP_API_URL}/lobbies/${roomId}/players`,
         { headers }
       );
 

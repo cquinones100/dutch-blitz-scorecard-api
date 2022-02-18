@@ -52,7 +52,7 @@ export default function Room() {
   const { token, fetching, setToken } = usePersistence(id);
 
   const submitPlayer = async (name: string) => {
-    const initialResponse = await fetch('http://blitz.cquinones.com/api/players', {
+    const initialResponse = await fetch(`${process.env.REACT_APP_API_URL}/players`, {
       method: 'POST',
       body: JSON.stringify({
         name,
@@ -77,7 +77,7 @@ export default function Room() {
   const onReady = async () => {
     if (!player) { return; }
 
-    const initialResponse = await fetch(`http://blitz.cquinones.com/api/lobbies/${id}/players/${player.id}/player_readies`, {
+    const initialResponse = await fetch(`${process.env.REACT_APP_API_URL}/lobbies/${id}/players/${player.id}/player_readies`, {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
