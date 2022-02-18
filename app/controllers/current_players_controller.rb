@@ -8,7 +8,7 @@ class CurrentPlayersController < ApplicationController
     )
 
     if player
-      render json: Serializer.serialize(player, :name, lobby_id: encode(player.lobby_id))
+      render json: player.serialize
     else
       render json: {}, status: 404
     end
