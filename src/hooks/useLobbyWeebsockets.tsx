@@ -14,7 +14,7 @@ type BroadcastType ={
   }
 };
 
-const useLobbyWebsockets = (roomId: number) => {
+const useLobbyWebsockets = (roomId: string | undefined) => {
   const [players, setPlayers] = useState<Player[]>([]);
   const [rounds, setRounds] = useState<RoundType[]>([]);
 
@@ -33,7 +33,7 @@ const useLobbyWebsockets = (roomId: number) => {
     });
   }, [roomId]);
 
-  return [players, rounds, setPlayers];
+  return { players, rounds, setPlayers }
 };
 
 export default useLobbyWebsockets;

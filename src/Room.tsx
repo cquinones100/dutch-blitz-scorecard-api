@@ -1,7 +1,8 @@
-import React, { useEffect, useState, ChangeEvent } from 'react'
+import React, { useState, ChangeEvent } from 'react'
 import { useParams } from 'react-router-dom';
 import { Form, Button, ListGroup, Alert, Row, Col, Badge } from 'react-bootstrap';
-import useLobbyWebsockets from './hooks/useLobbyWebsockets';
+import useLobbyWebsockets from './hooks/useLobbyWeebsockets';
+import usePersistence from './hooks/usePersistence';
 
 export type Player = {
   name: string;
@@ -47,9 +48,9 @@ export default function Room() {
   const { id } = useParams();
   const [player, setPlayer] = useState<Player | null>();
   const [nameError, setNameError] = useState<string | undefined>();
-  const [players, rounds, setPlayers] = useLobbyWebsockets(id);
+  const { players, rounds, setPlayers } = useLobbyWebsockets(id);
 
-  const { token, fetching, setToken } = usePersistence(id);
+  const { fetching, setToken } = usePersistence(id, setPlayer, setPlayers);
 
   const submitPlayer = async (name: string) => {
     const initialResponse = await fetch(`${process.env.REACT_APP_API_URL}/players`, {

@@ -6,7 +6,7 @@ export default function Root() {
   const navigate = useNavigate();
 
   const createLobby = async () => {
-    const initialResponse = await fetch('http://blitz.cquinones.com/api/lobbies', {
+    const initialResponse = await fetch(`${process.env.REACT_APP_API_URL}/lobbies`, {
       method: 'POST',
       headers: {
         'content-type': 'application/json',

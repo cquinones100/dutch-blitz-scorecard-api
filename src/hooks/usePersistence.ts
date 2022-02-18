@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
+import { Player } from "../Room";
 
-const usePersistence = (roomId, setPlayer, setPlayers) => {
+const usePersistence = (
+  roomId: string | undefined,
+  setPlayer: (player: Player | null) => void,
+  setPlayers: (players: Player[]) => void,
+) => {
   const [fetching, setFetching] = useState(true);
+  const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
     const initialFetch = async () => {
-      const [token, setToken] = useState<string | null>(null);
       const sessionToken = sessionStorage.getItem('token');
 
       setToken(sessionToken);
@@ -18,7 +23,7 @@ const usePersistence = (roomId, setPlayer, setPlayers) => {
         headers['Authorization'] = sessionToken;
       }
 
-      if (sessionToken) { 
+      if (sessionToken) {
         const initialResponse = await fetch(
           `${process.env.REACT_APP_API_URL}/current_player`,
           { headers }
@@ -28,7 +33,7 @@ const usePersistence = (roomId, setPlayer, setPlayers) => {
 
         if (player.lobby_id !== roomId) {
           setPlayer(null);
-          
+
           sessionStorage.removeItem('token');
         }
 
