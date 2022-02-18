@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState, ChangeEvent, SetStateAction } from 'react'
+import React, { useEffect, useState, ChangeEvent } from 'react'
 import { useParams } from 'react-router-dom';
-import { Consumer, createConsumer } from '@rails/actioncable';
 import { Form, Button, ListGroup, Alert, Row, Col, Badge } from 'react-bootstrap';
+import useLobbyWebsockets from './hooks/useLobbyWebsockets';
 
-type Player = {
+export type Player = {
   name: string;
   id: string;
   ready: boolean;
@@ -44,75 +44,12 @@ function PlayerForm({ submitPlayer }: PlayerFormProps ) {
 }
 
 export default function Room() {
-  const consumer = useRef<Consumer>();
   const { id } = useParams();
   const [player, setPlayer] = useState<Player | null>();
-  const [players, setPlayers] = useState<Player[]>([]);
   const [nameError, setNameError] = useState<string | undefined>();
-  const [token, setToken] = useState<string | null>(null);
-  const [fetching, setFetching] = useState(true);
+  const [players, rounds, setPlayers] = useLobbyWebsockets(id);
 
-  useEffect(() => {
-    const initialFetch = async () => {
-      const sessionToken = sessionStorage.getItem('token');
-
-      setToken(sessionToken);
-
-      const headers: HeadersInit = {
-        'content-type': 'application/json',
-      };
-
-      if (sessionToken) {
-        headers['Authorization'] = sessionToken;
-      }
-
-      if (sessionToken) { 
-        const initialResponse = await fetch(`http://blitz.cquinones.com/api/current_player`, {
-          headers
-        });
-
-        const player = await initialResponse.json();
-
-        if (player.lobby_id !== id) {
-          setPlayer(null);
-          
-          sessionStorage.removeItem('token');
-        }
-
-        setPlayer(player);
-      }
-
-      const initialResponse = await fetch(`http://blitz.cquinones.com/api/lobbies/${id}/players`, {
-        headers
-      });
-
-      const players = await initialResponse.json();
-
-      setPlayers(players);
-
-      setFetching(false);
-    }
-
-    initialFetch();
-  }, [id]);
-
-  useEffect(() => {
-    consumer.current = createConsumer('http://blitz.cquinones.com/api/cable');
-    consumer.current.subscriptions.create({
-      channel: 'LobbyChannel',
-      lobby_id: id
-    }, {
-      received({ data: { players } }: { data: { players: Player[] }}) {
-        setPlayers(players);
-      }
-    });
-  }, [id]);
-
-  useEffect(() => {
-    if (token) {
-      sessionStorage.setItem('token', token);
-    }
-  }, [token]);
+  const { token, fetching, setToken } = usePersistence(id);
 
   const submitPlayer = async (name: string) => {
     const initialResponse = await fetch('http://blitz.cquinones.com/api/players', {
