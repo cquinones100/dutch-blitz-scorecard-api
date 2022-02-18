@@ -1,8 +1,9 @@
-import React, { useState, ChangeEvent } from 'react'
+import React, { useState, ChangeEvent, useEffect } from 'react'
 import { useParams } from 'react-router-dom';
 import { Form, Button, ListGroup, Alert, Row, Col, Badge } from 'react-bootstrap';
 import useLobbyWebsockets from './hooks/useLobbyWeebsockets';
 import usePersistence from './hooks/usePersistence';
+import Round from './Round';
 
 export type Player = {
   name: string;
@@ -93,7 +94,28 @@ export default function Room() {
     }
   };
 
+  useEffect(() => {
+    const createRound = async () => {
+      const initialResponse = fetch(`${process.env.REACT_APP_API_URL}/lobbies/${id}/rounds`, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+        }
+      })
+
+      await initialResponse;
+    };
+
+    if (rounds?.length === 0 && players?.length > 1 && players?.every(({ ready }) => ready) && player?.name === players[0]?.name) {
+      createRound();
+    }
+  }, [rounds, players, player])
+
   if (fetching) return <></>;
+
+  if (rounds?.length > 0) {
+    return <Round number={rounds.length} />;
+  }
 
   return (
     <>
