@@ -21,16 +21,18 @@ const useLobbyWebsockets = (roomId: string | undefined) => {
   const consumer = useRef<Consumer>();
 
   useEffect(() => {
-    consumer.current = createConsumer(`${process.env.API_URL}/cable`);
-    consumer.current.subscriptions.create({
-      channel: 'LobbyChannel',
-      lobby_id: roomId
-    }, {
-      received({ data: { players, rounds } }: BroadcastType) {
-        setPlayers(players);
-        setRounds(rounds);
-      }
-    });
+    if (roomId) {
+      consumer.current = createConsumer(`${process.env.REACT_APP_API_URL}/cable`);
+      consumer.current.subscriptions.create({
+        channel: 'LobbyChannel',
+        lobby_id: roomId
+      }, {
+        received({ data: { players, rounds } }: BroadcastType) {
+          setPlayers(players);
+          setRounds(rounds);
+        }
+      });
+    }
   }, [roomId]);
 
   return { players, rounds, setPlayers }
