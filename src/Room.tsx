@@ -4,11 +4,13 @@ import { Form, Button, ListGroup, Alert, Row, Col, Badge } from 'react-bootstrap
 import useLobbyWebsockets from './hooks/useLobbyWeebsockets';
 import usePersistence from './hooks/usePersistence';
 import Round from './Round';
+import serverFetch from './utils/serverFetch';
 
 export type Player = {
   name: string;
   id: string;
   ready: boolean;
+  lobby_id: string;
 }
 
 type PlayerFormProps = {
@@ -51,23 +53,32 @@ export default function Room() {
   const [nameError, setNameError] = useState<string | undefined>();
   const { players, rounds, setPlayers } = useLobbyWebsockets(id);
 
-  const { fetching, setFetching, setToken } = usePersistence(id, setPlayer, setPlayers);
+  const { fetching, setFetching, setToken, tokenFetch } = usePersistence(id, setPlayer, setPlayers);
+
+  useEffect(() => {
+    const createRound = async () => {
+      setFetching(true);
+
+      await serverFetch().post(`/lobbies/${id}/rounds`);
+
+      setFetching(false);
+    };
+
+    if (rounds?.length === 0 &&
+        players?.length > 1 &&
+        players?.every(({ ready }) => ready) &&
+        player?.name === players[0]?.name && !fetching) { createRound(); }
+  }, [rounds, players, player, id, fetching, setFetching])
 
   const submitPlayer = async (name: string) => {
-    const initialResponse = await fetch(`${process.env.REACT_APP_API_URL}/players`, {
-      method: 'POST',
-      body: JSON.stringify({
-        name,
-        lobby_id: id,
-      }),
-      headers: {
-        'content-type': 'application/json',
-      }
-    });
-
-    const { player, token } = await initialResponse.json();
+    const { status, body: { player, token } } = (
+      await serverFetch().post<
+        { name: string, lobby_id: string },
+        { player: Player, token: string }
+      >('/players', { name, lobby_id: id! })
+    );
       
-    if (initialResponse.ok) {
+    if (status === 201) {
       setNameError(undefined);
       setPlayer(player);
       setToken(token);
@@ -79,42 +90,15 @@ export default function Room() {
   const onReady = async () => {
     if (!player) { return; }
 
-    const initialResponse = await fetch(`${process.env.REACT_APP_API_URL}/lobbies/${id}/players/${player.id}/player_readies`, {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-      }
-    });
+    const { status } = await tokenFetch!.post(`/lobbies/${id}/players/${player.id}/player_readies`);
 
-    if (initialResponse.ok) {
+    if (status === 201) {
       setPlayer({
         ...player,
         ready: true
       });
     }
   };
-
-  useEffect(() => {
-    const createRound = async () => {
-      setFetching(true);
-
-      const initialResponse = fetch(`${process.env.REACT_APP_API_URL}/lobbies/${id}/rounds`, {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-        }
-      })
-
-      await initialResponse; 
-
-      setFetching(false);
-    };
-
-    if (rounds?.length === 0 &&
-        players?.length > 1 &&
-        players?.every(({ ready }) => ready) &&
-        player?.name === players[0]?.name && !fetching) { createRound(); }
-  }, [rounds, players, player, id, fetching, setFetching])
 
   if (fetching) return <></>;
 
@@ -142,7 +126,7 @@ export default function Room() {
           )}
         </Col>
       </Row>
-      {!player && id &&(
+      {id && !tokenFetch && (
         <PlayerForm submitPlayer={submitPlayer} />
       )}
       {players.length > 0 && (

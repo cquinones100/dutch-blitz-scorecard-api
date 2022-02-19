@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Player } from "../Room";
+import serverFetch from "../utils/serverFetch";
 
 const usePersistence = (
   roomId: string | undefined,
@@ -15,21 +16,8 @@ const usePersistence = (
 
       setToken(sessionToken);
 
-      const headers: HeadersInit = {
-        'content-type': 'application/json',
-      };
-
       if (sessionToken) {
-        headers['Authorization'] = sessionToken;
-      }
-
-      if (sessionToken) {
-        const initialResponse = await fetch(
-          `${process.env.REACT_APP_API_URL}/current_player`,
-          { headers }
-        );
-
-        const player = await initialResponse.json();
+        const player = (await serverFetch(sessionToken).get<Player>('/current_player')).body;
 
         if (player.lobby_id !== roomId) {
           setPlayer(null);
@@ -40,12 +28,7 @@ const usePersistence = (
         setPlayer(player);
       }
 
-      const initialResponse = await fetch(
-        `${process.env.REACT_APP_API_URL}/lobbies/${roomId}/players`,
-        { headers }
-      );
-
-      const players = await initialResponse.json();
+      const players = (await serverFetch().get<Player[]>(`/lobbies/${roomId}/players`)).body;
 
       setPlayers(players);
 
@@ -61,7 +44,13 @@ const usePersistence = (
     }
   }, [token]);
 
-  return { token, fetching, setFetching, setToken };
+  let tokenFetch;
+
+  if (token) {
+    tokenFetch = serverFetch(token);
+  }
+
+  return { token, fetching, setFetching, setToken, tokenFetch };
 };
 
 export default usePersistence;
