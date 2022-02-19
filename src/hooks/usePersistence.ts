@@ -11,21 +11,20 @@ const usePersistence = (
   const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
-    const initialFetch = async () => {
-      const sessionToken = sessionStorage.getItem('token');
+    const sessionToken = sessionStorage.getItem('token');
 
+    const initialFetch = async () => {
       setToken(sessionToken);
 
       if (sessionToken) {
         const player = (await serverFetch(sessionToken).get<Player>('/current_player')).body;
 
         if (player.lobby_id !== roomId) {
-          setPlayer(null);
-
           sessionStorage.removeItem('token');
+          setToken(null);
+        } else {
+          setPlayer(player);
         }
-
-        setPlayer(player);
       }
 
       const players = (await serverFetch().get<Player[]>(`/lobbies/${roomId}/players`)).body;
@@ -34,6 +33,8 @@ const usePersistence = (
 
       setFetching(false);
     }
+
+    setPlayer(null);
 
     initialFetch();
   }, [roomId, setPlayer, setPlayers]);
