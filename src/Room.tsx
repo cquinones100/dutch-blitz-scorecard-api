@@ -5,6 +5,7 @@ import useLobbyWebsockets from './hooks/useLobbyWeebsockets';
 import usePersistence from './hooks/usePersistence';
 import Round from './Round';
 import serverFetch from './utils/serverFetch';
+import useRounds from './hooks/useRounds';
 
 export type Player = {
   name: string;
@@ -53,30 +54,15 @@ export default function Room() {
   const [nameError, setNameError] = useState<string | undefined>();
   const { players, rounds, setPlayers } = useLobbyWebsockets(id);
 
-  const { fetching, setFetching, setToken, tokenFetch } = usePersistence(id, setPlayer, setPlayers);
+  const { fetching, setToken, tokenFetch } = usePersistence(id, setPlayer, setPlayers);
 
-  useEffect(() => {
-    const createRound = async () => {
-      setFetching(true);
-
-      await serverFetch().post(`/lobbies/${id}/rounds`);
-
-      setFetching(false);
-    };
-
-    if (rounds?.length === 0 &&
-        players?.length > 1 &&
-        players?.every(({ ready }) => ready) &&
-        player?.name === players[0]?.name && !fetching) { createRound(); }
-  }, [rounds, players, player, id, fetching, setFetching])
+  useRounds(player, players, rounds, tokenFetch, id);
 
   const submitPlayer = async (name: string) => {
-    const { status, body: { player, token } } = (
-      await serverFetch().post<
-        { name: string, lobby_id: string },
-        { player: Player, token: string }
-      >('/players', { name, lobby_id: id! })
-    );
+    const { status, body: { player, token } } = await serverFetch().post<
+      { name: string, lobby_id: string },
+      { player: Player, token: string }
+    >('/players', { name, lobby_id: id! })
       
     if (status === 201) {
       setNameError(undefined);
@@ -100,9 +86,9 @@ export default function Room() {
     }
   };
 
-  if (fetching) return <></>;
+  if (fetching || !players) return <></>;
 
-  if (rounds?.length > 0) {
+  if (rounds && rounds?.length > 0) {
     return <Round number={rounds.length} />;
   }
 
@@ -121,14 +107,12 @@ export default function Room() {
           <h1>{player && `Hi ${player.name}, y`}{!player && 'Y'}ou are in room {id}</h1>
         </Col>
         <Col xs={4}>
-          {player && !player.ready && (
+          {player && !player.ready && tokenFetch && (
             <Button variant='success' onClick={onReady}>I'm Ready!</Button>
           )}
         </Col>
       </Row>
-      {id && !tokenFetch && (
-        <PlayerForm submitPlayer={submitPlayer} />
-      )}
+      {id && !tokenFetch && <PlayerForm submitPlayer={submitPlayer} />}
       {players.length > 0 && (
         <>
           <h2>Current Players</h2>

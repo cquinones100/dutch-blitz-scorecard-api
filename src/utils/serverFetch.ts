@@ -13,31 +13,45 @@ const serverFetch = (sessionToken?: string) => {
 
   type HandledResponse<Body> = {
     status: number;
-    body: Body
+    body: Body;
+    cancel: AbortController['abort'];
   };
 
-  async function handledResponse<Body, Response> (
+  interface PromiseWithCancel<T> extends Promise<T> {
+    cancel: () => void;
+  };
+
+  function handledResponse<Body, Response> (
     path: string,
     body?: Body,
     method?: 'POST' | 'GET'
-  ): Promise<HandledResponse<Response>> {
-    const initialResponse = await fetch(fullPath(path), {
-      method,
-      body: JSON.stringify(body),
-      headers
+  ) {
+    const controller = new AbortController();
+    const signal = controller.signal;
+
+    const request = new Promise(async resolve => {
+      const initialResponse = await fetch(fullPath(path), {
+        method,
+        body: JSON.stringify(body),
+        headers,
+        signal
+      });
+
+      if (initialResponse.ok || initialResponse.status === 422) {
+        const body = await initialResponse.json()
+
+        resolve({
+          status: initialResponse.status,
+          body
+        });
+      }
+
+      // eslint-disable-next-line no-throw-literal
+      throw 'server error';
     });
 
-    if (initialResponse.ok || initialResponse.status === 422) {
-      const body = await initialResponse.json()
-
-      return {
-        status: initialResponse.status,
-        body
-      };
-    }
-
-    // eslint-disable-next-line no-throw-literal
-    throw 'server error';
+    (request as PromiseWithCancel<HandledResponse<Response>>).cancel = () => controller.abort();
+    return request as PromiseWithCancel<HandledResponse<Response>>;
   }
 
   return ({

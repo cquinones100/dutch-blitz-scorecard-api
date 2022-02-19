@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { Player } from '../Room';
 import { Consumer, createConsumer } from '@rails/actioncable';
+import serverFetch from '../utils/serverFetch';
 
-type RoundType = {
+export type RoundType = {
   lobby_id: number;
   scores: Player & { score: number }
 };
@@ -15,8 +16,8 @@ type BroadcastType ={
 };
 
 const useLobbyWebsockets = (roomId: string | undefined) => {
-  const [players, setPlayers] = useState<Player[]>([]);
-  const [rounds, setRounds] = useState<RoundType[]>([]);
+  const [players, setPlayers] = useState<Player[]>();
+  const [rounds, setRounds] = useState<RoundType[]>();
 
   const consumer = useRef<Consumer>();
 
@@ -30,6 +31,10 @@ const useLobbyWebsockets = (roomId: string | undefined) => {
         received({ data: { players, rounds } }: BroadcastType) {
           setPlayers(players);
           setRounds(rounds);
+        },
+
+        connected() {
+          serverFetch().get(`/lobbies/${roomId}`);
         }
       });
     }
