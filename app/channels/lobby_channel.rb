@@ -20,8 +20,8 @@ class LobbyChannel < ApplicationCable::Channel
       ActionCable.server.broadcast("lobby_#{encode(lobby.id)}", {
         data: {
           players: lobby.players.map(&:serialize),
-          lobby: Serializer.serialize(lobby, :id),
-          rounds: lobby.rounds.order(:created_at).map { |round| Serializer.serialize(round, lobby_id: encode(lobby.id)) }
+          lobby: lobby.serialize,
+          rounds: lobby.rounds.map(&:serialize)
         }
       })
     end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_02_14_030943) do
+ActiveRecord::Schema.define(version: 2022_02_19_181022) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -27,6 +27,16 @@ ActiveRecord::Schema.define(version: 2022_02_14_030943) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["lobby_id"], name: "index_player_readies_on_lobby_id"
     t.index ["player_id"], name: "index_player_readies_on_player_id"
+  end
+
+  create_table "player_scores", force: :cascade do |t|
+    t.bigint "player_id", null: false
+    t.bigint "round_id", null: false
+    t.integer "value"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["player_id"], name: "index_player_scores_on_player_id"
+    t.index ["round_id"], name: "index_player_scores_on_round_id"
   end
 
   create_table "players", force: :cascade do |t|
@@ -47,6 +57,8 @@ ActiveRecord::Schema.define(version: 2022_02_14_030943) do
 
   add_foreign_key "player_readies", "lobbies"
   add_foreign_key "player_readies", "players"
+  add_foreign_key "player_scores", "players"
+  add_foreign_key "player_scores", "rounds"
   add_foreign_key "players", "lobbies"
   add_foreign_key "rounds", "lobbies"
 end
