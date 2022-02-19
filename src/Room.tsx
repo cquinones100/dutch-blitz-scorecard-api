@@ -1,10 +1,11 @@
-import React, { useState, ChangeEvent } from 'react'
+import React, { useState, ChangeEvent, useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom';
 import { Form, Button, ListGroup, Alert, Row, Col, Badge } from 'react-bootstrap';
-import useLobbyWebsockets from './hooks/useLobbyWeebsockets';
+import useLobbyWebsockets, { RoundType } from './hooks/useLobbyWeebsockets';
 import usePersistence from './hooks/usePersistence';
 import Round from './Round';
 import serverFetch from './utils/serverFetch';
+import RoundTransition from './RoundTransition';
 
 export type Player = {
   name: string;
@@ -53,6 +54,7 @@ export default function Room() {
   const [player, setPlayer] = useState<Player | null>();
   const [nameError, setNameError] = useState<string | undefined>();
   const { players, rounds, setPlayers } = useLobbyWebsockets(id);
+  const [transitioningRound, setTransitioningRound] = useState(false);
 
   const { fetching, setToken, tokenFetch } = usePersistence(id, setPlayer, setPlayers);
 
@@ -84,8 +86,23 @@ export default function Room() {
     }
   };
 
-  if (fetching || !players) return <></>;
+  const roundsRef = useRef<RoundType[]>(); 
 
+  useEffect(() => {
+    if (roundsRef.current && rounds && rounds.length !== roundsRef.current.length) {
+      setTransitioningRound(true);
+    }
+
+    roundsRef.current = rounds
+  }, [rounds])
+
+  const winner = rounds && rounds?.length > 1 ? players?.sort((a: Player, b: Player) => b.score - a.score)[0] : undefined;
+
+  if (transitioningRound) {
+    return <RoundTransition setTransitioningRound={setTransitioningRound} winner={winner}/>;
+  }
+
+  if (fetching || !players) return <></>;
 
   if (rounds && players && player && rounds?.length > 0) {
     const updateScore = async (value: number) => {
