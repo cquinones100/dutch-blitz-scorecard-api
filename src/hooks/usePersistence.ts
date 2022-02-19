@@ -53,7 +53,7 @@ const usePersistence = (
     }
 
     initialFetch();
-  }, [roomId]);
+  }, [roomId, setPlayer, setPlayers]);
 
   useEffect(() => {
     if (token) {
@@ -61,7 +61,7 @@ const usePersistence = (
     }
   }, [token]);
 
-  return { token, fetching, setToken };
+  return { token, fetching, setFetching, setToken };
 };
 
 export default usePersistence;

@@ -51,7 +51,7 @@ export default function Room() {
   const [nameError, setNameError] = useState<string | undefined>();
   const { players, rounds, setPlayers } = useLobbyWebsockets(id);
 
-  const { fetching, setToken } = usePersistence(id, setPlayer, setPlayers);
+  const { fetching, setFetching, setToken } = usePersistence(id, setPlayer, setPlayers);
 
   const submitPlayer = async (name: string) => {
     const initialResponse = await fetch(`${process.env.REACT_APP_API_URL}/players`, {
@@ -96,6 +96,8 @@ export default function Room() {
 
   useEffect(() => {
     const createRound = async () => {
+      setFetching(true);
+
       const initialResponse = fetch(`${process.env.REACT_APP_API_URL}/lobbies/${id}/rounds`, {
         method: 'POST',
         headers: {
@@ -103,13 +105,16 @@ export default function Room() {
         }
       })
 
-      await initialResponse;
+      await initialResponse; 
+
+      setFetching(false);
     };
 
-    if (rounds?.length === 0 && players?.length > 1 && players?.every(({ ready }) => ready) && player?.name === players[0]?.name) {
-      createRound();
-    }
-  }, [rounds, players, player, id])
+    if (rounds?.length === 0 &&
+        players?.length > 1 &&
+        players?.every(({ ready }) => ready) &&
+        player?.name === players[0]?.name && !fetching) { createRound(); }
+  }, [rounds, players, player, id, fetching, setFetching])
 
   if (fetching) return <></>;
 
