@@ -109,7 +109,7 @@ export default function Room() {
     if (rounds?.length === 0 && players?.length > 1 && players?.every(({ ready }) => ready) && player?.name === players[0]?.name) {
       createRound();
     }
-  }, [rounds, players, player])
+  }, [rounds, players, player, id])
 
   if (fetching) return <></>;
 
