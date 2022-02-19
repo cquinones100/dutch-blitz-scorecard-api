@@ -1,9 +1,9 @@
 class Serializer
-  def self.serialize(obj, *args)
-    new(obj, *args).serialize
+  def self.serialize(obj, *args, &block)
+    new(obj, *args).serialize(&block)
   end
 
-  attr_reader :args, :obj, :hoptions
+attr_reader :args, :obj, :hoptions, :serialized
 
   delegate :decode, :encode, to: :hash_ids
 
@@ -11,23 +11,29 @@ class Serializer
     @obj = obj
     @args = args
     @hoptions = hoptions
+    @serialized = {}
   end
 
-  def serialize
-    args.each_with_object({}) do |arg, hash|
-      if Proc === arg
-        arg.(obj)
-      else
-        hash[arg] = obj.send(arg)
+  def serialize(&block)
+    serialized.tap do |serialized_hash|
+      args.each do |arg|
+        serialized[arg] = obj.send(arg)
       end
-    end.tap do |hash|
-      hash[:id] = encode(obj.id)
-    end.merge(hoptions)
+
+      serialized_hash[:id] = encode(obj.id)
+      serialized.merge!(hoptions)
+
+      instance_eval(&block) if block_given?
+    end
   end
 
   private
 
   def hash_ids
     @has_ids ||= Hashids.new('this is my salt', 5)
+  end
+
+  def attribute(arg, &block)
+    serialized[arg] = block_given? ? obj.instance_exec(self, &block) : obj.send(arg)
   end
 end

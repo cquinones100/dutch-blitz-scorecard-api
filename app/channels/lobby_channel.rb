@@ -7,6 +7,12 @@ class LobbyChannel < ApplicationCable::Channel
     # Any cleanup needed when channel is unsubscribed
   end
 
+  def receive(data)
+    lobby = Lobby.find_by(id: self.class.decode(data['lobby_id']))
+
+    LobbyChannel.broadcast(lobby)
+  end
+
   class << self
     delegate :decode, :encode, to: :hash_ids
 

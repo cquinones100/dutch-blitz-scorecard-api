@@ -5,6 +5,14 @@ class Player < ApplicationRecord
   validates :name, uniqueness: { scope: :lobby }
 
   def serialize
-    Serializer.serialize(self, :name).merge!(ready: player_ready.present?)
+    Serializer.serialize(self) do
+      attribute(:name)
+
+      attribute(:lobby_id) do |serializer|
+        serializer.encode(lobby_id)
+      end
+
+      attribute(:ready) { player_ready.present? }
+    end
   end
 end
