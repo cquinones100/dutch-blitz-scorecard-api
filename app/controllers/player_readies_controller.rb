@@ -6,5 +6,7 @@ class PlayerReadiesController < ApplicationController
     player_ready = PlayerReady.create(player: player, lobby: lobby)
 
     LobbyChannel.broadcast(lobby)
+
+    render json: player_ready, status: 201
   end
 end

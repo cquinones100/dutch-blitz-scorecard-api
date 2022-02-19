@@ -11,7 +11,7 @@ class PlayersController < ApplicationController
         token: JWT.encode({ player_id: player.id, lobby_id: lobby.id }, 'secret')
       }
 
-      render json: json
+      render json: json, status: :created
     else
       render json: player.errors, status: 422
     end
