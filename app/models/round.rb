@@ -8,6 +8,14 @@ class Round < ApplicationRecord
     end
   end
 
+  def over?
+    player_scores.all?(&:entered?)
+  end
+
+  def increment
+    Round.create(lobby: lobby)
+  end
+
   def serialize
     Serializer.serialize(self) do
       attribute(:player_scores) { player_scores.map(&:serialize) }
