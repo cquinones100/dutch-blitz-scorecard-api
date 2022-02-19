@@ -3,7 +3,7 @@ class Lobby < ApplicationRecord
   has_many :rounds, -> { order(created_at: :asc) }
 
   def ready?
-    players.all?(&:ready?)
+    players.size > 1 && players.all?(&:ready?)
   end
 
   def serialize
