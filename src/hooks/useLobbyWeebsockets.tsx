@@ -5,7 +5,7 @@ import serverFetch from '../utils/serverFetch';
 
 export type RoundType = {
   lobby_id: number;
-  scores: Player & { score: number }
+  player_scores: Array<Pick<Player, 'id'> & { value: number, round_number: number }>
 };
 
 type BroadcastType ={

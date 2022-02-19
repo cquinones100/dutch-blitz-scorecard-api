@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, useEffect } from 'react'
+import React, { useState, ChangeEvent } from 'react'
 import { useParams } from 'react-router-dom';
 import { Form, Button, ListGroup, Alert, Row, Col, Badge } from 'react-bootstrap';
 import useLobbyWebsockets from './hooks/useLobbyWeebsockets';
@@ -12,6 +12,7 @@ export type Player = {
   id: string;
   ready: boolean;
   lobby_id: string;
+  score: number;
 }
 
 type PlayerFormProps = {
@@ -88,8 +89,15 @@ export default function Room() {
 
   if (fetching || !players) return <></>;
 
-  if (rounds && rounds?.length > 0) {
-    return <Round number={rounds.length} />;
+
+  if (rounds && players && player && rounds?.length > 0) {
+    const updateScore = async (value: number) => {
+      await tokenFetch!.post(`/lobbies/${id}/players/${player.id}/player_scores`, {
+        value
+      });
+    };
+
+    return <Round number={rounds.length} players={players} updateScore={updateScore} />;
   }
 
   return (

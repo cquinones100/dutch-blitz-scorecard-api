@@ -44,10 +44,10 @@ const serverFetch = (sessionToken?: string) => {
           status: initialResponse.status,
           body
         });
+      } else {
+        // eslint-disable-next-line no-throw-literal
+        throw 'server error';
       }
-
-      // eslint-disable-next-line no-throw-literal
-      throw 'server error';
     });
 
     (request as PromiseWithCancel<HandledResponse<Response>>).cancel = () => controller.abort();
