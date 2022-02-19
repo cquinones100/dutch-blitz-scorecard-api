@@ -5,10 +5,14 @@ class Player < ApplicationRecord
 
   validates :name, uniqueness: { scope: :lobby }
 
+  def ready?
+    player_ready.present?
+  end
+
   def serialize
     Serializer.serialize(self) do
       attribute(:name)
-      attribute(:ready) { player_ready.present? }
+      attribute(:ready) { ready? }
       attribute(:score) do
         player_scores.map(&:value).reduce(0) do |acc, value|
           if value.nil?
