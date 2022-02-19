@@ -5,7 +5,6 @@ import useLobbyWebsockets from './hooks/useLobbyWeebsockets';
 import usePersistence from './hooks/usePersistence';
 import Round from './Round';
 import serverFetch from './utils/serverFetch';
-import useRounds from './hooks/useRounds';
 
 export type Player = {
   name: string;
@@ -56,8 +55,6 @@ export default function Room() {
   const { players, rounds, setPlayers } = useLobbyWebsockets(id);
 
   const { fetching, setToken, tokenFetch } = usePersistence(id, setPlayer, setPlayers);
-
-  useRounds(player, players, rounds, tokenFetch, id);
 
   const submitPlayer = async (name: string) => {
     const { status, body: { player, token } } = await serverFetch().post<
