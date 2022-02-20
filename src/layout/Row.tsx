@@ -1,10 +1,18 @@
 import { ReactNode } from 'react';
-import { Row as BootstrapRow } from 'react-bootstrap';
+import VerticallyCenteredRow from './VerticallyCenteredRow';
 
-const Row = ({ children }: { children: ReactNode }) => (
-  <BootstrapRow className='align-items-center' style={{ height: '80%' }}>
+export type RowType = { 
+  children: ReactNode;
+  style?: {
+    [property: string]: string;
+  },
+  className?: string;
+};
+
+const Row = ({ children, className, style }: RowType) => (
+  <VerticallyCenteredRow className={className} style={{ height: '80%', ...style }}>
     {children}
-  </BootstrapRow>
+  </VerticallyCenteredRow>
 );
 
 export default Row;

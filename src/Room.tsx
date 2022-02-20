@@ -1,7 +1,6 @@
 import React, { useState, ChangeEvent } from 'react'
 import { useParams } from 'react-router-dom';
-import { Form, Button, ListGroup, Alert, Col, Badge, Row as BootstrapRow, } from 'react-bootstrap';
-import useLobbyWebsockets from './hooks/useLobbyWeebsockets';
+import { Form, Button, ListGroup, Alert, Col, Badge } from 'react-bootstrap';
 import usePersistence from './hooks/usePersistence';
 import Round from './Round';
 import serverFetch from './utils/serverFetch';
@@ -10,6 +9,9 @@ import QRCode from 'qrcode.react';
 import Row from './layout/Row';
 import useRoundTransition from './hooks/useRoundTransition';
 import Player from './types/Player';
+import VerticallyCenteredRow from './layout/VerticallyCenteredRow';
+import FormField from './layout/FormField';
+import useLobbyWebsockets from './hooks/useLobbyWeebsockets';
 
 type PlayerFormProps = {
   submitPlayer: (name: string) => void;
@@ -30,17 +32,21 @@ function PlayerForm({ submitPlayer }: PlayerFormProps ) {
 
   return(
     <Form onSubmit={onSubmit}>
-      <Form.Label htmlFor='name'>
-        Your Name
-      </Form.Label>
-      <Form.Control
-        name='name'
-        onChange={onChangeName}
-        value={name}
-      />
-      <Button variant="primary" type="submit">
-        Submit
-      </Button>
+      <FormField>
+        <Form.Label htmlFor='name'>
+          Your Name
+        </Form.Label>
+        <Form.Control
+          name='name'
+          onChange={onChangeName}
+          value={name}
+        />
+      </FormField>
+      <FormField>
+        <Button variant="primary" type="submit">
+          Submit
+        </Button>
+      </FormField>
     </Form>
   );
 }
@@ -114,14 +120,15 @@ export default function Room() {
 
   return (
     <Row>
-      {nameError && (
-        <BootstrapRow>
+      {
+      nameError && (
+        <VerticallyCenteredRow>
           <Alert variant='danger'>
             Name is already taken, please try another one
           </Alert>
-        </BootstrapRow>
+        </VerticallyCenteredRow>
       )}
-      <BootstrapRow>
+      <VerticallyCenteredRow>
         <Col xs={8}>
           <h1>{player && `Hi ${player.name}, y`}{!player && 'Y'}ou are in room {id}</h1>
         </Col>
@@ -130,7 +137,7 @@ export default function Room() {
             <Button variant='success' onClick={onReady}>I'm Ready!</Button>
           )}
         </Col>
-      </BootstrapRow>
+      </VerticallyCenteredRow>
       {id && !tokenFetch && <PlayerForm submitPlayer={submitPlayer} />}
       {lobby.players.length > 0 && (
         <>

@@ -3,6 +3,7 @@ import { Form, Table, Button } from 'react-bootstrap';
 import Lobby from './types/Lobby';
 import Player from './types/Player';
 import Round from './types/Round';
+import FormField from './layout/FormField';
 
 type RoundProps = {
   number: number;
@@ -20,6 +21,7 @@ const RoundComponent = ({ number, updateScore, lobby, round, player }: RoundProp
   useEffect(() => {
     setSubmitted(
       round.player_scores.some(({ player_name, score }) => score && player.name === player_name));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const score = numNonBlitzCards !== undefined && numBlitzCards !== undefined ?
@@ -56,7 +58,7 @@ const RoundComponent = ({ number, updateScore, lobby, round, player }: RoundProp
         <>
           <h2>Your score = {score}</h2>
           <Form>
-            <Form.Group className='mb-3'>
+            <FormField>
               <Form.Label htmlFor='numNonBlitzCards'>
                 Number of non blitz cards
               </Form.Label>
@@ -66,7 +68,7 @@ const RoundComponent = ({ number, updateScore, lobby, round, player }: RoundProp
                  onChange={onChangeNumNonBlitzCards}
                  value={numNonBlitzCards}
                />
-            </Form.Group>
+            </FormField>
             <Form.Group className='mb-3'>
               <Form.Label htmlFor='numNonBlitzCards'>
                 Number of blitz cards
@@ -78,7 +80,7 @@ const RoundComponent = ({ number, updateScore, lobby, round, player }: RoundProp
                 value={numBlitzCards}
               />
             </Form.Group>
-            <Form.Group className='mb-3'>
+            <FormField>
               <Button
                 className='mb-3'
                 variant='primary'
@@ -87,7 +89,7 @@ const RoundComponent = ({ number, updateScore, lobby, round, player }: RoundProp
               >
                 Submit
               </Button>
-            </Form.Group>
+            </FormField>
           </Form>
         </>
       )}

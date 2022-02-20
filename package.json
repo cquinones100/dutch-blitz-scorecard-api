@@ -10,7 +10,6 @@
     "@types/jest": "^27.4.0",
     "@types/node": "^16.11.24",
     "@types/rails__actioncable": "^6.1.6",
-    "@types/react": "^17.0.39",
     "@types/react-dom": "^17.0.11",
     "@types/react-router-dom": "^5.3.3",
     "qrcode.react": "^1.0.1",
@@ -48,6 +47,8 @@
     ]
   },
   "devDependencies": {
-    "@types/qrcode.react": "^1.0.2"
+    "@types/qrcode.react": "^1.0.2",
+    "@types/react": "^17.0.39",
+    "@types/styled-components": "^5.1.23"
   }
 }
