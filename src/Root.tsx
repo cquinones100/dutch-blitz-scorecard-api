@@ -18,14 +18,11 @@ export default function Root() {
     navigate(`/room/${id}`);
   };
 
-  const [enteringRoom, setEnteringRoom] = useState(false);
-
   return (
     <Row>
       <h1>Blitz!</h1>
       <Stack gap={2} className="col-md-5 mx-auto">
         <Button onClick={createLobby}>Create a Lobby</Button>
-        <Button onClick={() => { setEnteringRoom(true) }}>Enter Lobby Code</Button>
       </Stack>
     </Row>
   );
