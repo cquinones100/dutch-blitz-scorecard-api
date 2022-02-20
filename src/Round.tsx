@@ -44,26 +44,6 @@ const Round = (
   return (
     <>
       <h1>Round {number}</h1>
-      {submitted && (
-        <Table striped bordered>
-          <thead>
-            <tr>
-              <th>Player Name</th>
-              <th>Player Score</th>
-            </tr>
-          </thead>
-          <tbody>
-            {players.map(({ name, score }) => {
-              return (
-                <tr key={name}>
-                  <td>{name}</td>
-                  <td>{score}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </Table>
-      )}
       {!submitted && (
         <>
           <h2>Your score = {score}</h2>
@@ -90,16 +70,37 @@ const Round = (
                 value={numBlitzCards}
               />
             </Form.Group>
-            <Button
-              variant='primary'
-              onClick={onSubmit}
-              disabled={numBlitzCards === undefined && numNonBlitzCards === undefined}
-            >
-              Submit
-            </Button>
+            <Form.Group className='mb-3'>
+              <Button
+                className='mb-3'
+                variant='primary'
+                onClick={onSubmit}
+                disabled={numBlitzCards === undefined && numNonBlitzCards === undefined}
+              >
+                Submit
+              </Button>
+            </Form.Group>
           </Form>
         </>
       )}
+      <Table striped bordered>
+        <thead>
+          <tr>
+            <th>Player Name</th>
+            <th>Player Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          {players.map(({ name, score }) => {
+            return (
+              <tr key={name}>
+                <td>{name}</td>
+                <td>{score}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </Table>
     </>
   );
 };
