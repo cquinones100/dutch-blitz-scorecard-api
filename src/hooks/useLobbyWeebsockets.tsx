@@ -3,9 +3,11 @@ import { Player } from '../Room';
 import { Consumer, createConsumer } from '@rails/actioncable';
 import serverFetch from '../utils/serverFetch';
 
+export type PlayerScore = Pick<Player, 'id'> & { value: number, round_number: number, player_name: string };
+
 export type RoundType = {
   lobby_id: number;
-  player_scores: Array<Pick<Player, 'id'> & { value: number, round_number: number }>
+  player_scores: PlayerScore[]
 };
 
 type BroadcastType ={

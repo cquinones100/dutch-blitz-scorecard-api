@@ -83,6 +83,7 @@ const Round = (
           </Form>
         </>
       )}
+      <h2>Last Round</h2>
       <Table striped bordered>
         <thead>
           <tr>
@@ -91,7 +92,26 @@ const Round = (
           </tr>
         </thead>
         <tbody>
-          {players.map(({ name, score }) => {
+          {players.sort((a: Player, b: Player) => b.last_score - a.last_score).map(({ name, last_score }) => {
+            return (
+              <tr key={name}>
+                <td>{name}</td>
+                <td>{last_score}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </Table>
+      <h2>Overall</h2>
+      <Table striped bordered>
+        <thead>
+          <tr>
+            <th>Player Name</th>
+            <th>Player Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          {players.sort((a: Player, b: Player) => b.score - a.score).map(({ name, score }) => {
             return (
               <tr key={name}>
                 <td>{name}</td>
