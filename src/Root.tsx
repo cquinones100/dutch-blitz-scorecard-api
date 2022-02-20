@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { Button, Row, Stack } from 'react-bootstrap';
+import React from 'react';
+import { Button, Col, Stack } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import Row from './layout/Row';
 
 export default function Root() {
   const navigate = useNavigate();
@@ -19,11 +20,13 @@ export default function Root() {
   };
 
   return (
-    <Row>
-      <h1>Blitz!</h1>
-      <Stack gap={2} className="col-md-5 mx-auto">
-        <Button onClick={createLobby}>Create a Lobby</Button>
-      </Stack>
+    <Row className='align-items-center' style={{ height: '80%' }}>
+      <Col>
+        <h1 style={{ textAlign: 'center' }}>Blitz!</h1>
+        <Stack gap={2} className="col-md-5 mx-auto">
+          <Button onClick={createLobby}>Create a Lobby</Button>
+        </Stack>
+      </Col>
     </Row>
   );
 };

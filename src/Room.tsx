@@ -1,12 +1,13 @@
 import React, { useState, ChangeEvent, useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom';
-import { Form, Button, ListGroup, Alert, Row, Col, Badge } from 'react-bootstrap';
+import { Form, Button, ListGroup, Alert, Col, Badge, Row as BootstrapRow } from 'react-bootstrap';
 import useLobbyWebsockets, { PlayerScore, RoundType } from './hooks/useLobbyWeebsockets';
 import usePersistence from './hooks/usePersistence';
 import Round from './Round';
 import serverFetch from './utils/serverFetch';
 import RoundTransition from './RoundTransition';
 import QRCode from 'qrcode.react';
+import Row from './layout/Row';
 
 export type Player = {
   name: string;
@@ -128,16 +129,16 @@ export default function Room() {
   }
 
   return (
-    <>
+    <Row>
       {
       nameError && (
-        <Row>
+        <BootstrapRow>
           <Alert variant='danger'>
             Name is already taken, please try another one
           </Alert>
-        </Row>
+        </BootstrapRow>
       )}
-      <Row>
+      <BootstrapRow>
         <Col xs={8}>
           <h1>{player && `Hi ${player.name}, y`}{!player && 'Y'}ou are in room {id}</h1>
         </Col>
@@ -146,7 +147,7 @@ export default function Room() {
             <Button variant='success' onClick={onReady}>I'm Ready!</Button>
           )}
         </Col>
-      </Row>
+      </BootstrapRow>
       {id && !tokenFetch && <PlayerForm submitPlayer={submitPlayer} />}
       {players.length > 0 && (
         <>
@@ -163,6 +164,6 @@ export default function Room() {
         </>
       )}
       <QRCode value={window.location.href} />
-    </>
+    </Row>
   );
 };

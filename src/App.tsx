@@ -11,7 +11,7 @@ import Track from './Track';
 
 export default function App() {
   return(
-    <Container style={{ padding: '1rem' }}>
+    <Container style={{ padding: '1rem', height: '100vh' }}>
       <Router>
         <Routes>
           <Route path='/' element={<Root />} />
