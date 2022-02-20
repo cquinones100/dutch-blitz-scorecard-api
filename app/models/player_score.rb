@@ -13,6 +13,7 @@ class PlayerScore < ApplicationRecord
   def serialize
     Serializer.serialize(self) do
       attribute(:value)
+      attribute(:player_name) { player.name }
       attribute(:round_number) do
         round.lobby.rounds.find_index { |lobby_round| lobby_round == round }
       end
