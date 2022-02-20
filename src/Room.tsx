@@ -6,6 +6,7 @@ import usePersistence from './hooks/usePersistence';
 import Round from './Round';
 import serverFetch from './utils/serverFetch';
 import RoundTransition from './RoundTransition';
+import QRCode from 'qrcode.react';
 
 export type Player = {
   name: string;
@@ -149,6 +150,7 @@ export default function Room() {
           </ListGroup>
         </>
       )}
+      <QRCode value={window.location.href} />
     </>
   );
 };
