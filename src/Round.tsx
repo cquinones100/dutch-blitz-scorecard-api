@@ -10,7 +10,7 @@ const Round = (
   const [numBlitzCards, setNumBlitzCards] = useState<number | undefined>();
   const [submitted, setSubmitted] = useState(false);
 
-  const score = numNonBlitzCards && numBlitzCards ?
+  const score = numNonBlitzCards !== undefined && numBlitzCards !== undefined ?
     40 - (numNonBlitzCards! + numBlitzCards!) - (2 * numBlitzCards!) :
     0;
 
