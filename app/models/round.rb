@@ -19,6 +19,14 @@ class Round < ApplicationRecord
   def serialize
     Serializer.serialize(self) do
       attribute(:player_scores) { player_scores.map(&:serialize) }
+      attribute(:player_scores_sorted_desc) do
+        player_scores.order(value: :desc).map do |player_score|
+          Serializer.serialize(player_score) do 
+            attribute(:player_name) { player.name }
+            attribute(:value) { player_score.value }
+          end
+        end
+      end
     end
   end
 end
