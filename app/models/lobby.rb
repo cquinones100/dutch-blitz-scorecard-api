@@ -14,8 +14,9 @@ class Lobby < ApplicationRecord
 
   def serialize
     Serializer.serialize(self) do
-      attribute(:rounds)
+      attribute(:rounds) { rounds.map(&:serialize) }
       attribute(:players) { players.map(&:serialize) }
+      attribute(:current_round) { rounds.last&.serialize }
 
       attribute(:player_scores_sorted_desc) do
         players.sort_by(&:total_score).reverse.map do |player|
@@ -35,15 +36,12 @@ class Lobby < ApplicationRecord
         end
       end
 
-      attribute(:current_round) { rounds.last&.serialize }
-
       attribute(:player_last_winning_score) do
-        attribute(:player_name) do
-          last_round.winning_player_score.player.name
-        end
-
-        attribute(:score) do
-          last_round.winning_player_score.value
+        if last_round&.winning_player_score
+          Serializer.serialize(last_round&.winning_player_score) do
+            attribute(:player_name) { player.name }
+            attribute(:score) { value }
+          end
         end
       end
     end

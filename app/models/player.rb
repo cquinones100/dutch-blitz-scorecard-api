@@ -29,13 +29,8 @@ class Player < ApplicationRecord
       attribute(:name)
       attribute(:ready) { ready? }
       attribute(:score) { total_score }
-      attribute(:player_scores) { player_scores.map(&:serialize) }
-
-      attribute(:lobby_id) do |serializer|
-        serializer.encode(lobby_id)
-      end
-
       attribute(:last_score)
+      attribute(:lobby_id)
     end
   end
 end
