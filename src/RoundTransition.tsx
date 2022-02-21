@@ -1,6 +1,6 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
-import { PlayerScore } from './hooks/useLobbyWeebsockets';
+import React, { useEffect, useState } from 'react'
 import useRoundTransition from './hooks/useRoundTransition';
+import PlayerScore from './types/PlayerScore';
 
 const RoundTransition = ({
   setTransitioningRound,

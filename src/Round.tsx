@@ -1,17 +1,18 @@
 import React, { useState, ChangeEvent, useEffect } from 'react';
 import { Form, Table, Button } from 'react-bootstrap';
-import { RoundType } from './hooks/useLobbyWeebsockets';
-import { Lobby, Player } from './Room';
+import Lobby from './types/Lobby';
+import Player from './types/Player';
+import Round from './types/Round';
 
 type RoundProps = {
   number: number;
   updateScore: (value: number) => void;
   lobby: Lobby;
-  round: RoundType;
+  round: Round;
   player: Player;
 };
 
-const Round = ({ number, updateScore, lobby, round, player }: RoundProps) => {
+const RoundComponent = ({ number, updateScore, lobby, round, player }: RoundProps) => {
   const [numNonBlitzCards, setNumNonBlitzCards] = useState<number | undefined>();
   const [numBlitzCards, setNumBlitzCards] = useState<number | undefined>();
   const [submitted, setSubmitted] = useState(false);
@@ -132,4 +133,4 @@ const Round = ({ number, updateScore, lobby, round, player }: RoundProps) => {
   );
 };
 
-export default Round;
+export default RoundComponent;

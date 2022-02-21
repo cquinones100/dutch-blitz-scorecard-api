@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Player } from "../Room";
+import Player from "../types/Player";
 import serverFetch from "../utils/serverFetch";
 
 const usePersistence = (

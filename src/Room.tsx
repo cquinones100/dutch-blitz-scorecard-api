@@ -1,7 +1,7 @@
-import React, { useState, ChangeEvent, useEffect, useRef } from 'react'
+import React, { useState, ChangeEvent } from 'react'
 import { useParams } from 'react-router-dom';
 import { Form, Button, ListGroup, Alert, Col, Badge, Row as BootstrapRow, } from 'react-bootstrap';
-import useLobbyWebsockets, { PlayerScore, RoundType } from './hooks/useLobbyWeebsockets';
+import useLobbyWebsockets from './hooks/useLobbyWeebsockets';
 import usePersistence from './hooks/usePersistence';
 import Round from './Round';
 import serverFetch from './utils/serverFetch';
@@ -9,25 +9,7 @@ import RoundTransition from './RoundTransition';
 import QRCode from 'qrcode.react';
 import Row from './layout/Row';
 import useRoundTransition from './hooks/useRoundTransition';
-
-export type Lobby = {
-  id: string;
-  player_scores_sorted_desc: PlayerScore[];
-  player_last_scores_sorted_desc: PlayerScore[];
-  player_last_winning_score: PlayerScore;
-  current_round: RoundType;
-  players: Player[];
-  rounds: RoundType[];
-};
-
-export type Player = {
-  name: string;
-  id: string;
-  ready: boolean;
-  lobby_id: string;
-  score: number;
-  last_score: number;
-}
+import Player from './types/Player';
 
 type PlayerFormProps = {
   submitPlayer: (name: string) => void;

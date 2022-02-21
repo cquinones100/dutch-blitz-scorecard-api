@@ -1,11 +1,11 @@
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
-import { Lobby } from "../Room";
-import { RoundType } from "./useLobbyWeebsockets";
+import Lobby from "../types/Lobby";
+import Round from "../types/Round";
 
 const useRoundTransition = (
   lobby: Lobby | undefined
 ): [boolean, Dispatch<SetStateAction<boolean>>] => {
-  const roundsRef = useRef<RoundType[]>(); 
+  const roundsRef = useRef<Round[]>(); 
   const [transitioningRound, setTransitioningRound] = useState(false);
 
   useEffect(() => {

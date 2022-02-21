@@ -1,23 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
-import { Lobby, Player } from '../Room';
 import { Consumer, createConsumer } from '@rails/actioncable';
 import serverFetch from '../utils/serverFetch';
-
-export type PlayerScore = {
-  player_name: string;
-  score: number;
-}
-
-export type RoundType = {
-  lobby_id: number;
-  player_scores: PlayerScore[]
-  players: Player[];
-};
+import Lobby from '../types/Lobby';
+import Player from '../types/Player';
+import Round from '../types/Round';
 
 type BroadcastType ={
   data: {
     players: Player[];
-    rounds: RoundType[];
+    rounds: Round[];
     lobby: Lobby;
   };
 };
