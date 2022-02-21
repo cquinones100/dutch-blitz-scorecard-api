@@ -1,22 +1,29 @@
 import React, { useState, ChangeEvent, useEffect } from 'react';
 import { Form, Table, Button } from 'react-bootstrap';
-import { Player } from './Room';
+import { RoundType } from './hooks/useLobbyWeebsockets';
+import { Lobby, Player } from './Room';
 
-const Round = (
-  { number, players, updateScore }:
-  { number: number, players: Player[], updateScore: (value: number) => void; }
-) => {
+type RoundProps = {
+  number: number;
+  updateScore: (value: number) => void;
+  lobby: Lobby;
+  round: RoundType;
+  player: Player;
+};
+
+const Round = ({ number, updateScore, lobby, round, player }: RoundProps) => {
   const [numNonBlitzCards, setNumNonBlitzCards] = useState<number | undefined>();
   const [numBlitzCards, setNumBlitzCards] = useState<number | undefined>();
   const [submitted, setSubmitted] = useState(false);
 
+  useEffect(() => {
+    setSubmitted(
+      round.player_scores.some(({ player_name, score }) => score && player.name === player_name));
+  }, []);
+
   const score = numNonBlitzCards !== undefined && numBlitzCards !== undefined ?
     40 - (numNonBlitzCards! + numBlitzCards!) - (2 * numBlitzCards!) :
     0;
-
-  useEffect(() => {
-    setSubmitted(false);
-  }, [number]);
 
   const changeValue = (stringNumber: string) => {
     if (stringNumber === '') {
@@ -75,7 +82,7 @@ const Round = (
                 className='mb-3'
                 variant='primary'
                 onClick={onSubmit}
-                disabled={numBlitzCards === undefined && numNonBlitzCards === undefined}
+                disabled={numBlitzCards === undefined || numNonBlitzCards === undefined}
               >
                 Submit
               </Button>
@@ -92,11 +99,11 @@ const Round = (
           </tr>
         </thead>
         <tbody>
-          {players.sort((a: Player, b: Player) => b.last_score - a.last_score).map(({ name, last_score }) => {
+          {lobby.player_last_scores_sorted_desc.map(({ player_name, score }) => {
             return (
-              <tr key={name}>
-                <td>{name}</td>
-                <td>{last_score}</td>
+              <tr key={player_name}>
+                <td>{player_name}</td>
+                <td>{score}</td>
               </tr>
             );
           })}
@@ -111,10 +118,10 @@ const Round = (
           </tr>
         </thead>
         <tbody>
-          {players.sort((a: Player, b: Player) => b.score - a.score).map(({ name, score }) => {
+          {lobby.player_scores_sorted_desc.map(({ player_name, score }) => {
             return (
-              <tr key={name}>
-                <td>{name}</td>
+              <tr key={player_name}>
+                <td>{player_name}</td>
                 <td>{score}</td>
               </tr>
             );

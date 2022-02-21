@@ -20,7 +20,7 @@ export default function Root() {
   };
 
   return (
-    <Row className='align-items-center' style={{ height: '80%' }}>
+    <Row>
       <Col>
         <h1 style={{ textAlign: 'center' }}>Blitz!</h1>
         <Stack gap={2} className="col-md-5 mx-auto">

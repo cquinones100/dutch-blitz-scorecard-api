@@ -5,7 +5,6 @@ import serverFetch from "../utils/serverFetch";
 const usePersistence = (
   roomId: string | undefined,
   setPlayer: (player: Player | null) => void,
-  setPlayers: (players: Player[]) => void,
 ) => {
   const [fetching, setFetching] = useState(true);
   const [token, setToken] = useState<string | null>(null);
@@ -27,17 +26,13 @@ const usePersistence = (
         }
       }
 
-      const players = (await serverFetch().get<Player[]>(`/lobbies/${roomId}/players`)).body;
-
-      setPlayers(players);
-
       setFetching(false);
     }
 
     setPlayer(null);
 
     initialFetch();
-  }, [roomId, setPlayer, setPlayers]);
+  }, [roomId, setPlayer]);
 
   useEffect(() => {
     if (token) {

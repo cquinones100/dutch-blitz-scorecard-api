@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from 'react'
-import { Player } from './Room';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { PlayerScore } from './hooks/useLobbyWeebsockets';
+import useRoundTransition from './hooks/useRoundTransition';
 
 const RoundTransition = ({
   setTransitioningRound,
   winner
 }: {
-    setTransitioningRound: (value: boolean) => void,
-    winner: Player | undefined,
+    setTransitioningRound: ReturnType<typeof useRoundTransition>[1];
+    winner: PlayerScore | undefined;
   }
 ) => {
   const [countDown, setCountDown] = useState(5);
@@ -26,7 +27,7 @@ const RoundTransition = ({
 
   return (
     <>
-      {winner && <h1>{winner.name} won the last round!</h1>}
+      {winner && <h1>{winner.player_name} won the last round!</h1>}
       <h1>Round starting in {countDown}</h1>
     </>
   );

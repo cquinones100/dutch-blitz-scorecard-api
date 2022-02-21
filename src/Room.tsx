@@ -1,6 +1,6 @@
 import React, { useState, ChangeEvent, useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom';
-import { Form, Button, ListGroup, Alert, Col, Badge, Row as BootstrapRow } from 'react-bootstrap';
+import { Form, Button, ListGroup, Alert, Col, Badge, Row as BootstrapRow, } from 'react-bootstrap';
 import useLobbyWebsockets, { PlayerScore, RoundType } from './hooks/useLobbyWeebsockets';
 import usePersistence from './hooks/usePersistence';
 import Round from './Round';
@@ -8,6 +8,17 @@ import serverFetch from './utils/serverFetch';
 import RoundTransition from './RoundTransition';
 import QRCode from 'qrcode.react';
 import Row from './layout/Row';
+import useRoundTransition from './hooks/useRoundTransition';
+
+export type Lobby = {
+  id: string;
+  player_scores_sorted_desc: PlayerScore[];
+  player_last_scores_sorted_desc: PlayerScore[];
+  player_last_winning_score: PlayerScore;
+  current_round: RoundType;
+  players: Player[];
+  rounds: RoundType[];
+};
 
 export type Player = {
   name: string;
@@ -56,13 +67,11 @@ export default function Room() {
   const { id } = useParams();
   const [player, setPlayer] = useState<Player | null>();
   const [nameError, setNameError] = useState<string | undefined>();
-  const { players, rounds, setPlayers } = useLobbyWebsockets(id);
-  const [transitioningRound, setTransitioningRound] = useState(false);
+  const { lobby } = useLobbyWebsockets(id);
 
-  const { fetching, setToken, tokenFetch } = usePersistence(id, setPlayer, setPlayers);
+  const { fetching, setToken, tokenFetch } = usePersistence(id, setPlayer);
 
-  useEffect(() => {
-  });
+  const [transitioningRound, setTransitioningRound] = useRoundTransition(lobby);
 
   const submitPlayer = async (name: string) => {
     const { status, body: { player, token } } = await serverFetch().post<
@@ -92,46 +101,38 @@ export default function Room() {
     }
   };
 
-  const roundsRef = useRef<RoundType[]>(); 
-
-  useEffect(() => {
-    if (roundsRef.current && rounds && rounds.length !== roundsRef.current.length) {
-      setTransitioningRound(true);
-    }
-
-    roundsRef.current = rounds
-  }, [rounds])
-
-  const winningScore = rounds ?
-    rounds[rounds.length - 2]?.player_scores.sort((a: PlayerScore, b: PlayerScore) => b.value - a.value)[0] :
-    undefined;
-
-  const winner = rounds && rounds?.length > 1 && winningScore ?
-    players?.find(({ name }) => {
-      return name === winningScore.player_name;
-    }) :
-    undefined;
+  if (fetching || !lobby) return <></>;
 
   if (transitioningRound) {
-    return <RoundTransition setTransitioningRound={setTransitioningRound} winner={winner}/>;
+    return (
+      <RoundTransition
+        setTransitioningRound={setTransitioningRound}
+        winner={lobby?.player_last_winning_score}
+      />
+    );
   }
 
-  if (fetching || !players) return <></>;
-
-  if (rounds && players && player && rounds?.length > 0) {
+  if (lobby && lobby.current_round && player && lobby.current_round.players) {
     const updateScore = async (value: number) => {
       await tokenFetch!.post(`/lobbies/${id}/players/${player.id}/player_scores`, {
         value
       });
     };
 
-    return <Round number={rounds.length} players={players} updateScore={updateScore} />;
+    return (
+      <Round
+        number={lobby.rounds.length}
+        updateScore={updateScore}
+        lobby={lobby}
+        round={lobby.current_round}
+        player={player}
+      />
+    );
   }
 
   return (
     <Row>
-      {
-      nameError && (
+      {nameError && (
         <BootstrapRow>
           <Alert variant='danger'>
             Name is already taken, please try another one
@@ -149,11 +150,11 @@ export default function Room() {
         </Col>
       </BootstrapRow>
       {id && !tokenFetch && <PlayerForm submitPlayer={submitPlayer} />}
-      {players.length > 0 && (
+      {lobby.players.length > 0 && (
         <>
           <h2>Current Players</h2>
           <ListGroup>
-            {players.map(({ name, id, ready }: Player) => {
+            {lobby.players.map(({ name, id, ready }: Player) => {
               return (
                 <ListGroup.Item key={id}>
                   {name} {ready ? <Badge bg='success'>Ready!</Badge> : <Badge bg='danger'>Not ready</Badge>}
