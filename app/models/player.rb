@@ -19,6 +19,11 @@ class Player < ApplicationRecord
     end
   end
 
+  def last_score
+    player_scores.order(created_at: :desc)[0]&.value ||
+    player_scores.order(created_at: :desc)[1]&.value
+  end
+
   def serialize
     Serializer.serialize(self) do
       attribute(:name)
@@ -30,10 +35,7 @@ class Player < ApplicationRecord
         serializer.encode(lobby_id)
       end
 
-      attribute(:last_score) do
-        player_scores.order(created_at: :desc)[0]&.value ||
-        player_scores.order(created_at: :desc)[1]&.value
-      end
+      attribute(:last_score)
     end
   end
 end

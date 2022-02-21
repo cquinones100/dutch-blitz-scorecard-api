@@ -8,6 +8,8 @@ class CurrentPlayersController < ApplicationController
     )
 
     if player
+      LobbyChannel.broadcast(player.lobby)
+
       render json: player.serialize
     else
       render json: {}, status: 404
