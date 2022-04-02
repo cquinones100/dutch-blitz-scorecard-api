@@ -1,6 +1,6 @@
-import React, { useState, ChangeEvent } from 'react'
+import React, { useState, ChangeEvent, FunctionComponent } from 'react'
 import { useParams } from 'react-router-dom';
-import { Form, Button, ListGroup, Alert, Col, Badge } from 'react-bootstrap';
+import { Form, Button, ListGroup, Alert, Col, Badge, Table } from 'react-bootstrap';
 import usePersistence from './hooks/usePersistence';
 import Round from './Round';
 import serverFetch from './utils/serverFetch';
@@ -91,11 +91,61 @@ export default function Room() {
 
   if (fetching || !lobby) return <></>;
 
+  const Scores = () => {
+    return (
+      <>
+        <h2>Last Round</h2>
+        <Table striped bordered>
+          <thead>
+            <tr>
+              <th>Player Name</th>
+              <th>Player Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            {lobby
+              .player_last_scores_sorted_desc
+              .map(({ player_name, score }) => {
+                return (
+                  <tr key={player_name}>
+                    <td>{player_name}</td>
+                    <td>{score}</td>
+                  </tr>
+                );
+              })}
+          </tbody>
+        </Table>
+        <h2>Overall</h2>
+        <Table striped bordered>
+          <thead>
+            <tr>
+              <th>Player Name</th>
+              <th>Player Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            {lobby
+              .player_scores_sorted_desc
+              .map(({ player_name, score }) => {
+                return (
+                  <tr key={player_name}>
+                    <td>{player_name}</td>
+                    <td>{score}</td>
+                  </tr>
+                );
+            })}
+          </tbody>
+        </Table>
+      </>
+    )
+  };
+
   if (transitioningRound) {
     return (
       <RoundTransition
         setTransitioningRound={setTransitioningRound}
         winner={lobby?.player_last_winning_score}
+        Scores={Scores}
       />
     );
   }
@@ -111,17 +161,16 @@ export default function Room() {
       <Round
         number={lobby.rounds.length}
         updateScore={updateScore}
-        lobby={lobby}
         round={lobby.current_round}
         player={player}
+        Scores={Scores as FunctionComponent}
       />
     );
   }
 
   return (
     <Row>
-      {
-      nameError && (
+      {nameError && (
         <VerticallyCenteredRow>
           <Alert variant='danger'>
             Name is already taken, please try another one

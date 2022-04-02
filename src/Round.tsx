@@ -1,19 +1,18 @@
 import React, { useState, ChangeEvent, useEffect } from 'react';
-import { Form, Table, Button } from 'react-bootstrap';
-import Lobby from './types/Lobby';
+import { Form, Button } from 'react-bootstrap';
 import Player from './types/Player';
 import Round from './types/Round';
 import FormField from './layout/FormField';
+import ScoreDisplay from './types/ScoreDisplay';
 
 type RoundProps = {
   number: number;
   updateScore: (value: number) => void;
-  lobby: Lobby;
   round: Round;
   player: Player;
-};
+} & ScoreDisplay;
 
-const RoundComponent = ({ number, updateScore, lobby, round, player }: RoundProps) => {
+const RoundComponent = ({ number, updateScore, round, player, Scores }: RoundProps) => {
   const [numNonBlitzCards, setNumNonBlitzCards] = useState<number | undefined>();
   const [numBlitzCards, setNumBlitzCards] = useState<number | undefined>();
   const [submitted, setSubmitted] = useState(false);
@@ -21,7 +20,7 @@ const RoundComponent = ({ number, updateScore, lobby, round, player }: RoundProp
   useEffect(() => {
     setSubmitted(
       round.player_scores.some(({ player_name, score }) => score && player.name === player_name));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const score = numNonBlitzCards !== undefined && numBlitzCards !== undefined ?
@@ -62,12 +61,12 @@ const RoundComponent = ({ number, updateScore, lobby, round, player }: RoundProp
               <Form.Label htmlFor='numNonBlitzCards'>
                 Number of non blitz cards
               </Form.Label>
-               <Form.Control
-                 name='numNonBlitzCards'
-                 type='number'
-                 onChange={onChangeNumNonBlitzCards}
-                 value={numNonBlitzCards}
-               />
+              <Form.Control
+                name='numNonBlitzCards'
+                type='number'
+                onChange={onChangeNumNonBlitzCards}
+                value={numNonBlitzCards}
+              />
             </FormField>
             <Form.Group className='mb-3'>
               <Form.Label htmlFor='numNonBlitzCards'>
@@ -93,44 +92,7 @@ const RoundComponent = ({ number, updateScore, lobby, round, player }: RoundProp
           </Form>
         </>
       )}
-      <h2>Last Round</h2>
-      <Table striped bordered>
-        <thead>
-          <tr>
-            <th>Player Name</th>
-            <th>Player Score</th>
-          </tr>
-        </thead>
-        <tbody>
-          {lobby.player_last_scores_sorted_desc.map(({ player_name, score }) => {
-            return (
-              <tr key={player_name}>
-                <td>{player_name}</td>
-                <td>{score}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </Table>
-      <h2>Overall</h2>
-      <Table striped bordered>
-        <thead>
-          <tr>
-            <th>Player Name</th>
-            <th>Player Score</th>
-          </tr>
-        </thead>
-        <tbody>
-          {lobby.player_scores_sorted_desc.map(({ player_name, score }) => {
-            return (
-              <tr key={player_name}>
-                <td>{player_name}</td>
-                <td>{score}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </Table>
+      <Scores />
     </>
   );
 };
