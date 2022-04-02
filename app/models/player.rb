@@ -30,7 +30,7 @@ class Player < ApplicationRecord
       attribute(:ready) { ready? }
       attribute(:score) { total_score }
       attribute(:last_score)
-      attribute(:lobby_id)
+      attribute(:lobby_id) { |serializer| serializer.encode(lobby_id) }
     end
   end
 end
