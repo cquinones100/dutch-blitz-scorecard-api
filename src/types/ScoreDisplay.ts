@@ -1,7 +1,7 @@
-import { ReactNode } from "react";
+import { FunctionComponent } from "react";
 
 type ScoreDisplay = {
-  Scores: ReactNode
+  Scores: FunctionComponent
 };
 
 export default ScoreDisplay;

@@ -1,5 +1,5 @@
-import React, { useState, ChangeEvent, useEffect, useRef } from 'react';
-import { Form, Table, Button } from 'react-bootstrap';
+import React, { useState, ChangeEvent, useEffect } from 'react';
+import { Form, Button } from 'react-bootstrap';
 import Player from './types/Player';
 import Round from './types/Round';
 import FormField from './layout/FormField';

@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent } from 'react'
+import React, { useState, ChangeEvent, FunctionComponent } from 'react'
 import { useParams } from 'react-router-dom';
 import { Form, Button, ListGroup, Alert, Col, Badge, Table } from 'react-bootstrap';
 import usePersistence from './hooks/usePersistence';
@@ -63,9 +63,9 @@ export default function Room() {
   const [transitioningRound, setTransitioningRound] = useRoundTransition(lobby);
 
   const submitPlayer = async (name: string) => {
-    const { status, body: { player, token } } = await serverFetch().post<
+    const { status, body: { player, token, name: nameErrorResponse } } = await serverFetch().post<
       { name: string, lobby_id: string },
-      { player: Player, token: string }
+      { player: Player, token: string, name: string[] }
     >('/players', { name, lobby_id: id! })
       
     if (status === 201) {
@@ -73,7 +73,7 @@ export default function Room() {
       setPlayer(player);
       setToken(token);
     } else {
-      setNameError(player.name);
+      setNameError(nameErrorResponse[0]);
     }
   }
 
@@ -141,9 +141,6 @@ export default function Room() {
     )
   };
 
-  console.log('scores', Scores);
-
-
   if (transitioningRound) {
     return (
       <RoundTransition
@@ -165,10 +162,9 @@ export default function Room() {
       <Round
         number={lobby.rounds.length}
         updateScore={updateScore}
-        lobby={lobby}
         round={lobby.current_round}
         player={player}
-        Scores={Scores}
+        Scores={Scores as FunctionComponent}
       />
     );
   }
@@ -178,7 +174,7 @@ export default function Room() {
       {nameError && (
         <VerticallyCenteredRow>
           <Alert variant='danger'>
-            Name is already taken, please try another one
+            Name {nameError}
           </Alert>
         </VerticallyCenteredRow>
       )}
