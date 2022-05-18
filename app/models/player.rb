@@ -4,6 +4,7 @@ class Player < ApplicationRecord
   has_one :player_ready
 
   validates :name, uniqueness: { scope: :lobby }
+  validates :name, presence: true
 
   def ready?
     player_ready.present?
