@@ -62,9 +62,9 @@ export default function Room() {
   const [transitioningRound, setTransitioningRound] = useRoundTransition(lobby);
 
   const submitPlayer = async (name: string) => {
-    const { status, body: { player, token } } = await serverFetch().post<
+    const { status, body: { player, token, name: nameErrorResponse } } = await serverFetch().post<
       { name: string, lobby_id: string },
-      { player: Player, token: string }
+      { player: Player, token: string, name: string[] }
     >('/players', { name, lobby_id: id! })
       
     if (status === 201) {
@@ -72,7 +72,7 @@ export default function Room() {
       setPlayer(player);
       setToken(token);
     } else {
-      setNameError(player.name);
+      setNameError(nameErrorResponse[0]);
     }
   }
 
@@ -173,7 +173,7 @@ export default function Room() {
       {nameError && (
         <VerticallyCenteredRow>
           <Alert variant='danger'>
-            Name is already taken, please try another one
+            Name {nameError}
           </Alert>
         </VerticallyCenteredRow>
       )}
