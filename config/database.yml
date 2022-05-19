@@ -19,7 +19,7 @@ default: &default
   encoding: unicode
   host: <%= ENV.fetch("DB_HOST") { "localhost" } %>
   port: <%= ENV.fetch("DB_PORT") { 5432 } %>
-  username: <%= ENV.fetch("DB_USER") { "pguser" } %>
+  username: <%= ENV.fetch("DB_USER") { ENV.fetch("USER") } %>
   password: <%= ENV.fetch("DB_PASSWORD") { "" } %>
   # For details on connection pooling, see Rails configuration guide
   # https://guides.rubyonrails.org/configuring.html#database-pooling
