@@ -17,6 +17,10 @@
 default: &default
   adapter: postgresql
   encoding: unicode
+  host: <%= ENV.fetch("DB_HOST") { localhost } %>
+  port: <%= ENV.fetch("DB_PORT") { 5432 } %>
+  username: <%= ENV.fetch("DB_USER") %>
+  password: <%= ENV.fetch("DB_PASSWORD") %>
   # For details on connection pooling, see Rails configuration guide
   # https://guides.rubyonrails.org/configuring.html#database-pooling
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
@@ -81,5 +85,3 @@ test:
 production:
   <<: *default
   database: Ducth_Blitz_Calculator_Api_production
-  # username: Ducth_Blitz_Calculator_Api
-  password: <%= ENV['DUCTH_BLITZ_CALCULATOR_API_DATABASE_PASSWORD'] %>
