@@ -56,7 +56,7 @@ const RoundComponent = ({ number, updateScore, round, player, Scores }: RoundPro
 
   const canSubmit = numBlitzCards !== undefined &&
     numNonBlitzCards !== undefined &&
-    !outOfRange(numNonBlitzCards, 0, 30) &&
+    !outOfRange(numNonBlitzCards, 0, 40) &&
     !outOfRange(numBlitzCards, 0, 10);
 
   return (
@@ -76,7 +76,7 @@ const RoundComponent = ({ number, updateScore, round, player, Scores }: RoundPro
                 onChange={onChangeNumNonBlitzCards}
                 value={numNonBlitzCards}
                 required
-                isInvalid={numNonBlitzCards ? outOfRange(numNonBlitzCards, 0, 30) : false}
+                isInvalid={numNonBlitzCards ? outOfRange(numNonBlitzCards, 0, 40) : false}
               />
             </FormField>
             <Form.Group className='mb-3'>
