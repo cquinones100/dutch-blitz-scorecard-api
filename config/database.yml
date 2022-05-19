@@ -1,0 +1,20 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  # For details on connection pooling, see Rails configuration guide
+  # https://guides.rubyonrails.org/configuring.html#database-pooling
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+
+development:
+  <<: *default
+  database: Ducth_Blitz_Calculator_Api_development
+
+test:
+  <<: *default
+  database: Ducth_Blitz_Calculator_Api_test
+
+production:
+  <<: *default
+  database: Ducth_Blitz_Calculator_Api_production
+  # username: Ducth_Blitz_Calculator_Api
+  password: <%= ENV['DUCTH_BLITZ_CALCULATOR_API_DATABASE_PASSWORD'] %>
